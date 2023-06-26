@@ -17,11 +17,17 @@ final class TableViewController: UITableViewController {
         
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
         
         performSelector(inBackground: #selector(loadImages), with: nil)
     }
 
     // MARK: - Private Methods
+    @objc private func shareTapped() {
+        let activityVC = UIActivityViewController(activityItems: ["Hello! This is great app! Try it now!"], applicationActivities: nil)
+        present(activityVC, animated: true)
+    }
+
     @objc private func loadImages() {
         let fm = FileManager.default
         let path = Bundle.main.resourcePath!
