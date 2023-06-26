@@ -7,14 +7,16 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+final class DetailViewController: UIViewController {
+    // MARK: - IBOutlet
+    @IBOutlet private var imageView: UIImageView!
 
-    @IBOutlet var imageView: UIImageView!
-    
+    // MARK: - Public Properties
     var selectedImage: String?
     var selectedPictureNumber = 0
     var totalPictures = 0
-    
+
+    // MARK: - UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,19 +40,20 @@ class DetailViewController: UIViewController {
         
         navigationController?.hidesBarsOnTap = false
     }
-    
-    @objc func shareTapped() {
+
+    // MARK: - Private Methods
+    @objc private func shareTapped() {
         guard let image = imageView.image?.jpegData(compressionQuality: 0.8) else {
             print("No image found")
             return
         }
         
-        let vc = UIActivityViewController(activityItems: [image, selectedImage ?? ""], applicationActivities: [])
+        let activityViewController = UIActivityViewController(activityItems: [image, selectedImage ?? ""], applicationActivities: [])
         if #available(iOS 16.0, *) {
-            vc.popoverPresentationController?.sourceItem = navigationItem.rightBarButtonItem
+            activityViewController.popoverPresentationController?.sourceItem = navigationItem.rightBarButtonItem
         } else {
-            vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+            activityViewController.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         }
-        present(vc, animated: true)
+        present(activityViewController, animated: true)
     }
 }

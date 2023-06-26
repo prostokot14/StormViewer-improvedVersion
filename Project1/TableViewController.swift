@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  TableViewController.swift
 //  Project1
 //
 //  Created by Антон Кашников on 09.02.2023.
@@ -7,15 +7,22 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
-    var pictures = [String]()
+final class TableViewController: UITableViewController {
+    // MARK: - Private Properties
+    private var pictures = [String]()
     
+    // MARK: - UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
         
+        performSelector(inBackground: #selector(loadImages), with: nil)
+    }
+
+    // MARK: - Private Methods
+    @objc private func loadImages() {
         let fm = FileManager.default
         let path = Bundle.main.resourcePath!
         let items = try! fm.contentsOfDirectory(atPath: path)
@@ -27,8 +34,15 @@ class ViewController: UITableViewController {
         }
         
         pictures.sort()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+        }
     }
-    
+}
+
+// MARK: - UITableViewController
+extension TableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         pictures.count
     }
@@ -47,14 +61,11 @@ class ViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // 1: try loading the "Detail" view controller and typecasting it to be DetailViewController
-        if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
-            // 2: success! Set its selectedImage property
-            vc.selectedImage = pictures[indexPath.row]
-            vc.selectedPictureNumber = indexPath.row + 1
-            vc.totalPictures = pictures.count
-            // 3: now push it onto the navigation controller
-            navigationController?.pushViewController(vc, animated: true)
+        if let detailViewController = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
+            detailViewController.selectedImage = pictures[indexPath.row]
+            detailViewController.selectedPictureNumber = indexPath.row + 1
+            detailViewController.totalPictures = pictures.count
+            navigationController?.pushViewController(detailViewController, animated: true)
         }
     }
 }
